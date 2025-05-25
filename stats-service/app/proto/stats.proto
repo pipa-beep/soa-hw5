@@ -1,0 +1,78 @@
+syntax = "proto3";
+package stats;
+
+import "google/protobuf/timestamp.proto";
+
+service StatsService {
+  // Статистика по постам
+  rpc GetPostCounts(PostRequest) returns (CountResponse);
+  rpc GetPostDynamics(DynamicsRequest) returns (DynamicsResponse);
+  rpc GetTopPosts(TopRequest) returns (TopItemsResponse);
+  rpc GetTopUsers(TopRequest) returns (TopItemsResponse);
+
+  // Статистика по промокодам
+  rpc GetPromocodeCounts(PromoRequest) returns (CountResponse);
+  rpc GetPromocodeDynamics(DynamicsRequest) returns (DynamicsResponse);
+  rpc GetTopPromocodes(TopRequest) returns (TopItemsResponse);
+  rpc GetTopUsersByPromo(TopRequest) returns (TopItemsResponse);
+}
+
+// Запрос по одному посту
+message PostRequest {
+  string post_id = 1;
+}
+
+// Запрос по одному промокоду
+message PromoRequest {
+  string promo_id = 1;
+}
+
+// Общая структура для суммарных счетчиков
+message CountResponse {
+  uint64 views    = 1;
+  uint64 likes    = 2;
+  uint64 comments = 3;
+}
+
+// Запрос динамики за период
+message DynamicsRequest {
+  string id                 = 1;
+  google.protobuf.Timestamp from = 2;
+  google.protobuf.Timestamp to   = 3;
+}
+
+// Пара «дата – значение»
+message DayCount {
+  string date  = 1;  // в формате YYYY-MM-DD
+  uint64 count = 2;
+}
+
+// Массив дневных значений
+message DynamicsResponse {
+  repeated DayCount items = 1;
+}
+
+// Метрики для топ-запросов
+enum Metric {
+  VIEWS    = 0;
+  LIKES    = 1;
+  COMMENTS = 2;
+  CLICKS   = 3;
+}
+
+// Параметры топ-запроса
+message TopRequest {
+  Metric metric = 1;
+  int32  limit  = 2;
+}
+
+// Элемент топа
+message TopItem {
+  string id    = 1;  // post_id или user_id или promo_id
+  uint64 value = 2;  // число лайков/просмотров/кликов
+}
+
+// Ответ на топ-запрос
+message TopItemsResponse {
+  repeated TopItem items = 1;
+}
