@@ -1,0 +1,6 @@
+clickhouse-driver
+grpcio
+grpcio-tools
+aiokafka
+google.protobuf
+pytest
